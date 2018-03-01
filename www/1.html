@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        .oDiv {
+            width: 200px;
+            height: 160px;
+            background: #ddd;
+            border-style: dotted;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="oDiv" id="oDiv">
+        拖拽上传
+    </div>
+    <script>
+        function upload(oFile) {
+            // 初始化一个formdata
+            let formdata = new FormData();
+            // ⚠️ ⚠️ ⚠️
+            // 这里我们需要处理下上传的文件
+            Array.from(oFile.files).forEach(item => {
+                formdata.append('ofile', item);
+            });
+
+            // 创建xhr对象，发送异步请求
+            let xhr = new XMLHttpRequest();
+            xhr.open('POST', `http://localhost:8888/api`, true);
+            xhr.send(formdata); // 直接传递给send
+
+            // 监听请求状态
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState == 4) {
+                    if (xhr.status >= 200 && xhr.status < 300 || xhr.status == 304) {
+                        alert('成功');
+                    }
+                }
+            }
+        }
+        let oDiv = document.getElementById('oDiv');
+        oDiv.addEventListener('dragenter', function (e) {
+            
+            console.log('你已经拖着文件进来了, 快松手。')
+        });
+        oDiv.addEventListener('dragover', function (e) {
+            e.stopPropagation();
+            e.preventDefault();
+            console.log('别晃了，快松手吧~!');
+            return false;
+        },true);
+        oDiv.addEventListener('dragleave', function (e) {
+            console.log('你离开了我，呜呜~!');
+        });
+        oDiv.addEventListener('drop', function (e) {
+            e.stopPropagation();
+            e.preventDefault();
+            console.log('上传成功');
+            // 执行上传操作
+            upload(e.dataTransfer);
+            return false;
+        }, true)
+
+    </script>
+</body>
+
+</html>
